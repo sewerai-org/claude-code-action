@@ -29,13 +29,7 @@ jobs:
             3. **Add inline comments**: Use `mcp__github__add_pull_request_review_comment_to_pending_review` for each specific piece of feedback on particular lines
             4. **Submit the review**: Use `mcp__github__submit_pending_pull_request_review` with event type "COMMENT" (not "REQUEST_CHANGES") to publish all comments as a non-blocking review
 
-            Focus your review on:
-            - Code quality and best practices
-            - Potential bugs or security issues
-            - Performance considerations
-            - Maintainability and readability
-            - Architecture and design decisions
+            ONLY PROVIDE CHANGE SUGGESTIONS ON SPECIFIC LINES OF CODE.  NO GENERAL COMMENTS OR SUMMARY FEEDBACK.KEEPT IT FOCUSED ON THE CODE CHANGES. KEEP IT CONSISE AND TO THE POINT.
 
-            Provide specific, actionable feedback. Use inline comments for line-specific issues and include an overall summary when submitting the review. **Important**: Submit as "COMMENT" type so the review doesn't block the PR.
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           allowed_tools: "mcp__github__create_pending_pull_request_review,mcp__github__add_pull_request_review_comment_to_pending_review,mcp__github__submit_pending_pull_request_review,mcp__github__get_pull_request_diff"
