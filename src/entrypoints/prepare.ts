@@ -93,6 +93,7 @@ async function run() {
       additionalMcpConfig,
       claudeCommentId: commentId.toString(),
       allowedTools: context.inputs.allowedTools,
+      prNumber: context.isPR ? context.entityNumber.toString() : undefined,
     });
     core.setOutput("mcp_config", mcpConfig);
   } catch (error) {

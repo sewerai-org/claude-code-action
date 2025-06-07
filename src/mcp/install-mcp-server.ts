@@ -8,6 +8,7 @@ type PrepareConfigParams = {
   additionalMcpConfig?: string;
   claudeCommentId?: string;
   allowedTools: string[];
+  prNumber?: string;
 };
 
 export async function prepareMcpConfig(
@@ -21,6 +22,7 @@ export async function prepareMcpConfig(
     additionalMcpConfig,
     claudeCommentId,
     allowedTools,
+    prNumber,
   } = params;
   try {
     const allowedToolsList = allowedTools || [];
@@ -44,6 +46,7 @@ export async function prepareMcpConfig(
             BRANCH_NAME: branch,
             REPO_DIR: process.env.GITHUB_WORKSPACE || process.cwd(),
             ...(claudeCommentId && { CLAUDE_COMMENT_ID: claudeCommentId }),
+            ...(prNumber && { PR_NUMBER: prNumber }),
             GITHUB_EVENT_NAME: process.env.GITHUB_EVENT_NAME || "",
             IS_PR: process.env.IS_PR || "false",
           },
