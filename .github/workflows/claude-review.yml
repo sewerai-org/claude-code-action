@@ -8,6 +8,7 @@ jobs:
   auto-review:
     permissions:
       contents: read
+      pull-requests: write
       id-token: write
     runs-on: ubuntu-latest
 
@@ -21,12 +22,6 @@ jobs:
         uses: ./
         with:
           direct_prompt: |
-            Please review this PR. Look at the changes and provide thoughtful feedback on:
-            - Code quality and best practices
-            - Potential bugs or issues
-            - Suggestions for improvements
-            - Overall architecture and design decisions
-
-            Be constructive and specific in your feedback. Give inline comments where applicable.
+            Keep it short and only leave inline comments on the code.
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           allowed_tools: "mcp__github__add_pull_request_review_comment"
