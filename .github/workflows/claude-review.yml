@@ -2,11 +2,12 @@ name: Auto review PRs
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize]
 
 jobs:
   auto-review:
     permissions:
+      pull-requests: write
       contents: read
       id-token: write
     runs-on: ubuntu-latest
@@ -18,7 +19,7 @@ jobs:
           fetch-depth: 1
 
       - name: Auto review PR
-        uses: anthropics/claude-code-action@main
+        uses: ./
         with:
           direct_prompt: |
             Please review this PR and provide inline feedback using the GitHub review system. Follow these steps:
