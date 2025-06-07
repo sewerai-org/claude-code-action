@@ -23,9 +23,15 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           timeout_minutes: "60"
           direct_prompt: |
-            Please review this pull request and provide comprehensive feedback.
+            Please review this pull request and provide comprehensive feedback using the GitHub review system.
 
-            Focus on:
+            **Review Process:**
+            1. Start a pending review with `mcp__github__create_pending_pull_request_review`
+            2. Get the diff details using `mcp__github__get_pull_request_diff` to understand changes and line numbers
+            3. Add specific inline comments using `mcp__github__add_pull_request_review_comment_to_pending_review` for each issue
+            4. Submit the complete review with `mcp__github__submit_pending_pull_request_review` using event type "COMMENT" (not "REQUEST_CHANGES") to provide non-blocking feedback
+
+            **Focus Areas:**
             - Code quality and best practices
             - Potential bugs or issues
             - Performance considerations
@@ -34,5 +40,6 @@ jobs:
             - Documentation updates if needed
 
             Provide constructive feedback with specific suggestions for improvement.
-            Use inline comments to highlight specific areas of concern.
-          # allowed_tools: "mcp__github__add_pull_request_review_comment"
+            Use inline comments for line-specific issues and include an overall assessment when submitting the review.
+            **Important**: Submit the review as type "COMMENT" so it doesn't block the PR from being merged.
+          allowed_tools: "mcp__github__create_pending_pull_request_review,mcp__github__add_pull_request_review_comment_to_pending_review,mcp__github__submit_pending_pull_request_review,mcp__github__get_pull_request_diff"
