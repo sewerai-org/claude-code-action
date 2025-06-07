@@ -8,6 +8,7 @@ A general-purpose [Claude Code](https://claude.ai/code) action for GitHub PRs an
 
 - 🤖 **Interactive Code Assistant**: Claude can answer questions about code, architecture, and programming
 - 🔍 **Code Review**: Analyzes PR changes and suggests improvements
+- 💬 **Inline Comments**: Creates line-specific comments on pull requests for targeted code feedback
 - ✨ **Code Implementation**: Can implement simple fixes, refactoring, and even new features
 - 💬 **PR/Issue Integration**: Works seamlessly with GitHub comments and PR reviews
 - 🛠️ **Flexible Tool Access**: Access to GitHub APIs and file operations (additional tools can be enabled via configuration)
@@ -278,16 +279,36 @@ This action is built on top of [`anthropics/claude-code-base-action`](https://gi
 - **Implement Code Changes**: Make simple to moderate code changes based on requests
 - **Prepare Pull Requests**: Creates commits on a branch and links back to a prefilled PR creation page
 - **Perform Code Reviews**: Analyze PR changes and provide detailed feedback
+- **Create Inline Comments**: For pull requests, Claude can create line-specific comments to provide targeted feedback on specific code sections
 - **Smart Branch Handling**:
   - When triggered on an **issue**: Always creates a new branch for the work
   - When triggered on an **open PR**: Always pushes directly to the existing PR branch
   - When triggered on a **closed PR**: Creates a new branch since the original is no longer active
 
+### Inline Comments on Pull Requests
+
+When working with pull requests, Claude can create inline comments directly on specific lines of code to provide targeted feedback. This is especially useful for code reviews where you want to point out specific issues or suggestions.
+
+**How to use inline comments:**
+
+- Claude automatically has access to inline commenting for all PR events
+- Simply ask Claude to review code or point out specific issues
+- Claude will create both a general progress comment and inline comments where appropriate
+
+**Examples of when Claude uses inline comments:**
+
+- Code review feedback: "This function could be optimized..."
+- Bug detection: "Potential null pointer exception here..."
+- Best practices: "Consider using const instead of let..."
+- Security concerns: "This input should be sanitized..."
+
+Claude intelligently chooses between using the main tracking comment for overall progress and inline comments for specific code feedback.
+
 ### What Claude Cannot Do
 
-- **Submit PR Reviews**: Claude cannot submit formal GitHub PR reviews
+- **Submit PR Reviews**: Claude cannot submit formal GitHub PR reviews (but can create inline comments for feedback)
 - **Approve PRs**: For security reasons, Claude cannot approve pull requests
-- **Post Multiple Comments**: Claude only acts by updating its initial comment
+- **Create New Top-Level Comments**: Claude only updates its initial tracking comment (but can create inline comments on PRs)
 - **Execute Commands Outside Its Context**: Claude only has access to the repository and PR/issue context it's triggered in
 - **Run Arbitrary Bash Commands**: By default, Claude cannot execute Bash commands unless explicitly allowed using the `allowed_tools` configuration
 - **View CI/CD Results**: Cannot access CI systems, test results, or build logs unless an additional tool or MCP server is configured

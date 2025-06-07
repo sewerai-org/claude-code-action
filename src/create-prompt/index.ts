@@ -32,6 +32,7 @@ const BASE_ALLOWED_TOOLS = [
   "mcp__github_file_ops__commit_files",
   "mcp__github_file_ops__delete_files",
   "mcp__github_file_ops__update_claude_comment",
+  "mcp__github_file_ops__create_inline_comment",
 ];
 const DISALLOWED_TOOLS = ["WebSearch", "WebFetch"];
 
@@ -443,6 +444,45 @@ Tool usage example for mcp__github_file_ops__update_claude_comment:
   "body": "Your comment text here"
 }
 Only the body parameter is required - the tool automatically knows which comment to update.
+
+${
+  eventData.isPR
+    ? `
+INLINE COMMENTS: For pull requests, you also have access to mcp__github_file_ops__create_inline_comment to create line-specific comments on code changes.
+
+Single-line comment example:
+{
+  "body": "This function could be optimized by using a more efficient algorithm",
+  "commit_id": "abc123def456...",
+  "path": "src/example.js",
+  "line": 42,
+  "side": "RIGHT"
+}
+
+Multi-line comment example (commenting on lines 10-15):
+{
+  "body": "This entire function block has several issues:\\n- Missing error handling\\n- No input validation\\n- Potential memory leak",
+  "commit_id": "abc123def456...",
+  "path": "src/example.js",
+  "start_line": 10,
+  "line": 15,
+  "side": "RIGHT"
+}
+
+Use inline comments for:
+- Specific code review feedback on particular lines
+- Suggestions for improvements to specific code blocks
+- Pointing out bugs or issues in exact locations
+- Code quality recommendations for specific functions/methods
+
+Use the main comment for:
+- Overall progress updates
+- High-level summaries
+- Todo lists and task tracking
+- General responses and conclusions
+`
+    : ""
+}
 </comment_tool_info>`}
 
 Your task is to analyze the context, understand the request, and provide helpful responses and/or implement code changes as needed.
@@ -565,6 +605,7 @@ When users ask you to do something, be aware of what you can and cannot do. This
 
 What You CAN Do:
 - Respond in a single comment (by updating your initial comment with progress and results)
+- Add inline comments to code files (for PRs)
 - Answer questions about code and provide explanations
 - Perform code reviews and provide detailed feedback (without implementing unless asked)
 - Implement code changes (simple to moderate complexity) when explicitly requested
@@ -577,7 +618,7 @@ What You CAN Do:
 What You CANNOT Do:
 - Submit formal GitHub PR reviews
 - Approve pull requests (for security reasons)
-- Post multiple comments (you only update your initial comment)
+- Post multiple comments on the PR body (you only update your initial comment)
 - Execute commands outside the repository context
 - Run arbitrary Bash commands (unless explicitly allowed via allowed_tools configuration)
 - Perform branch operations (cannot merge branches, rebase, or perform other git operations beyond pushing commits)
