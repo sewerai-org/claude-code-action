@@ -442,6 +442,105 @@ server.tool(
 );
 
 server.tool(
+  "create_inline_comment",
+  "Create an inline comment on a specific line in a pull request file. For single-line comments, only provide 'line'. For multi-line comments, provide both 'start_line' and 'line' (where 'line' is the end line).",
+  {
+    body: z.string().describe("The comment content"),
+    commit_id: z.string().describe("The SHA of the commit to comment on"),
+    path: z.string().describe("The relative file path within the repository"),
+    line: z
+      .number()
+      .describe(
+        "The line number in the diff to comment on (for multi-line comments, this is the END line)",
+      ),
+    side: z
+      .enum(["LEFT", "RIGHT"])
+      .optional()
+      .describe(
+        "Which side of the diff (LEFT for deletion, RIGHT for addition). Defaults to RIGHT",
+      ),
+    start_line: z
+      .number()
+      .optional()
+      .describe(
+        "For multi-line comments, the FIRST line of the range. If omitted, creates single-line comment",
+      ),
+  },
+  async ({ body, commit_id, path, line, side = "RIGHT", start_line }) => {
+    try {
+      const githubToken = process.env.GITHUB_TOKEN;
+      const prNumber = process.env.PR_NUMBER;
+
+      if (!githubToken) {
+        throw new Error("GITHUB_TOKEN environment variable is required");
+      }
+      if (!prNumber) {
+        throw new Error("PR_NUMBER environment variable is required");
+      }
+
+      const owner = REPO_OWNER;
+      const repo = REPO_NAME;
+
+      const octokit = new Octokit({
+        auth: githubToken,
+      });
+
+      const commentData: any = {
+        body,
+        commit_id,
+        path,
+        line,
+        side,
+      };
+
+      if (start_line !== undefined) {
+        commentData.start_line = start_line;
+      }
+
+      const result = await octokit.rest.pulls.createReviewComment({
+        owner,
+        repo,
+        pull_number: parseInt(prNumber, 10),
+        ...commentData,
+      });
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                id: result.data.id,
+                html_url: result.data.html_url,
+                path: result.data.path,
+                line: result.data.line,
+                side: result.data.side,
+                created_at: result.data.created_at,
+              },
+              null,
+              2,
+            ),
+          },
+        ],
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error: ${errorMessage}`,
+          },
+        ],
+        error: errorMessage,
+        isError: true,
+      };
+    }
+  },
+);
+
+server.tool(
   "update_claude_comment",
   "Update the Claude comment with progress and results (automatically handles both issue and PR comments)",
   {
